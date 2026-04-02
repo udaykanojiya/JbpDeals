@@ -39,29 +39,50 @@ const Home = () => {
       </section>
 
       {/* Category Icons Strip */}
-      <section className="bg-card py-10 shadow-sm border-y border-border-color">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-center gap-6 overflow-x-auto hide-scrollbar pb-4 -mx-4 px-4 sm:mx-0 sm:px-0">
+      <section className="bg-card py-2 md:py-3 shadow-sm border-y border-border-color overflow-hidden w-full">
+          {/* Desktop/Tablet Strip (Centered & Scrollable) */}
+          <div className="hidden sm:flex items-center overflow-x-auto hide-scrollbar pb-1 w-full">
+            <div className="flex items-center gap-4 mx-auto px-10 min-w-max">
             {MOCK_CATEGORIES.map(category => (
               <Link
                 key={category.id}
                 to={`/offers?category=${category.id}`}
-                className="flex flex-col items-center gap-3 min-w-[100px] group"
+                className="flex items-center gap-2.5 px-5 py-2 bg-background border border-border-color rounded-full hover:border-accent hover:shadow-md hover:bg-accent/5 transition-all group shrink-0"
               >
-                <div className="w-16 h-16 rounded-full bg-background border border-border-color flex items-center justify-center shadow-sm group-hover:shadow-md group-hover:border-accent group-hover:bg-accent/5 transition-all duration-300">
-                  {ICONS[category.icon] || ICONS.default}
+                <div className="w-7 h-7 rounded-full bg-card border border-border-color flex items-center justify-center group-hover:border-accent/40 shadow-sm transition-all overflow-hidden p-0.5">
+                  {/* Scaled icons for better fit */}
+                  {React.cloneElement(ICONS[category.icon] || ICONS.default, { size: 16 })}
                 </div>
-                <span className="text-sm font-medium text-text-primary group-hover:text-accent transition-colors">
+                <span className="text-sm font-black text-text-primary group-hover:text-accent transition-colors whitespace-nowrap">
+                  {category.name}
+                </span>
+              </Link>
+            ))}
+            </div>
+          </div>
+
+          {/* Mobile Grid (Non-scrollable) */}
+          <div className="sm:hidden grid grid-cols-4 gap-y-4 gap-x-1">
+            {MOCK_CATEGORIES.map(category => (
+              <Link
+                key={category.id}
+                to={`/offers?category=${category.id}`}
+                className="flex flex-col items-center gap-1.5 transition-all active:scale-95"
+              >
+                <div className="w-12 h-12 rounded-xl bg-background border border-border-color flex items-center justify-center shadow-sm hover:border-accent transition-all">
+                  {/* Smaller icons for mobile grid */}
+                  {React.cloneElement(ICONS[category.icon] || ICONS.default, { size: 20 })}
+                </div>
+                <span className="text-[9px] font-black text-text-primary text-center leading-tight">
                   {category.name}
                 </span>
               </Link>
             ))}
           </div>
-        </div>
       </section>
 
       {/* Featured Offers Grid */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16">
         <SectionHeader 
           title="Trending Deals" 
           link={user ? "/offers" : "/login"} 

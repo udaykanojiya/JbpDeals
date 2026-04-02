@@ -28,13 +28,14 @@ const Dashboard = () => {
     .sort((a, b) => new Date(b.redeemedAt) - new Date(a.redeemedAt));
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full min-h-[80vh]">
-      <div className="flex flex-col md:flex-row gap-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 w-full min-h-[80vh]">
+      <div className="flex flex-col md:flex-row gap-6 md:gap-8">
         
-        {/* Sidebar */}
+        {/* Sidebar / Mobile Nav */}
         <div className="w-full md:w-80 flex-shrink-0">
-          <div className="bg-card rounded-3xl p-6 border border-border-color shadow-sm mb-6 sticky top-24">
-            <div className="flex flex-col items-center text-center pb-6 border-b border-border-color relative">
+          <div className="bg-card rounded-3xl p-2 md:p-6 border border-border-color shadow-sm md:sticky md:top-24">
+            {/* Desktop Profile Info */}
+            <div className="hidden md:flex flex-col items-center text-center pb-6 border-b border-border-color relative">
               <button className="absolute top-0 right-0 p-2 text-text-secondary hover:text-primary bg-background rounded-full transition-colors">
                 <Edit3 className="w-4 h-4" />
               </button>
@@ -46,40 +47,40 @@ const Dashboard = () => {
               </div>
             </div>
 
-            <div className="py-4 space-y-2">
+            {/* Navigation - Vertical on Desktop, Horizontal on Mobile */}
+            <div className="flex flex-row md:flex-col overflow-x-auto hide-scrollbar md:py-4 gap-2">
               <button 
                 onClick={() => setActiveTab('saved')}
-                className={`w-full flex items-center justify-between p-3 rounded-xl transition-all ${activeTab === 'saved' ? 'bg-primary text-card font-semibold shadow-sm' : 'text-text-secondary hover:bg-background'}`}
+                className={`flex-1 md:w-full flex items-center justify-center md:justify-between p-3 rounded-xl transition-all whitespace-nowrap min-w-fit ${activeTab === 'saved' ? 'bg-primary text-card font-semibold shadow-md md:shadow-sm scale-[1.02] md:scale-100' : 'text-text-secondary hover:bg-background'}`}
               >
-                <div className="flex items-center gap-3">
-                  <Bookmark className="w-5 h-5" /> Saved Offers
+                <div className="flex items-center gap-2 md:gap-3">
+                  <Bookmark className="w-5 h-5" /> <span className="text-sm md:text-base">Saved</span>
                 </div>
-                <span className={`text-xs px-2 py-0.5 rounded-full ${activeTab === 'saved' ? 'bg-card/20' : 'bg-background'}`}>
+                <span className={`hidden md:inline text-xs px-2 py-0.5 rounded-full ${activeTab === 'saved' ? 'bg-card/20' : 'bg-background'}`}>
                   {savedOffers.length}
                 </span>
               </button>
 
               <button 
                 onClick={() => setActiveTab('redeemed')}
-                className={`w-full flex items-center justify-between p-3 rounded-xl transition-all ${activeTab === 'redeemed' ? 'bg-primary text-card font-semibold shadow-sm' : 'text-text-secondary hover:bg-background'}`}
+                className={`flex-1 md:w-full flex items-center justify-center md:justify-between p-3 rounded-xl transition-all whitespace-nowrap min-w-fit ${activeTab === 'redeemed' ? 'bg-primary text-card font-semibold shadow-md md:shadow-sm scale-[1.02] md:scale-100' : 'text-text-secondary hover:bg-background'}`}
               >
-                <div className="flex items-center gap-3">
-                  <Ticket className="w-5 h-5" /> Active Codes
+                <div className="flex items-center gap-2 md:gap-3">
+                  <Ticket className="w-5 h-5" /> <span className="text-sm md:text-base">Codes</span>
                 </div>
-                <span className={`text-xs px-2 py-0.5 rounded-full ${activeTab === 'redeemed' ? 'bg-card/20' : 'bg-background'}`}>
+                <span className={`hidden md:inline text-xs px-2 py-0.5 rounded-full ${activeTab === 'redeemed' ? 'bg-card/20' : 'bg-background'}`}>
                   {redeemedCodes.length}
                 </span>
               </button>
 
-              <button className="w-full flex items-center gap-3 p-3 rounded-xl text-text-secondary hover:bg-background transition-colors">
-                <Settings className="w-5 h-5" /> Account Settings
+              <button className="flex-1 md:w-full flex items-center justify-center md:justify-start gap-2 md:gap-3 p-3 rounded-xl text-text-secondary hover:bg-background transition-colors whitespace-nowrap min-w-fit">
+                <Settings className="w-5 h-5" /> <span className="text-sm md:text-base">Settings</span>
               </button>
-            </div>
 
-            <div className="pt-4 border-t border-border-color">
+              {/* Sign Out only in desktop sidebar list */}
               <button 
                 onClick={logout}
-                className="w-full flex items-center justify-center gap-2 p-3 text-discount font-medium hover:bg-red-50 rounded-xl transition-colors"
+                className="hidden md:flex w-full items-center justify-center gap-2 p-3 mt-4 text-discount font-medium hover:bg-red-50 rounded-xl transition-colors border-t border-border-color pt-6"
               >
                 <LogOut className="w-5 h-5" /> Sign Out
               </button>
@@ -89,10 +90,13 @@ const Dashboard = () => {
 
         {/* Main Content Area */}
         <div className="flex-grow">
-          <div className="border-b border-border-color pb-4 mb-8">
-            <h1 className="text-2xl md:text-3xl font-black text-text-primary tracking-tight">
-              {activeTab === 'saved' ? 'Your Saved Collections' : 'Your Coupon Codes'}
+          <div className="border-b border-border-color pb-4 mb-6 md:mb-8 flex justify-between items-end">
+            <h1 className="text-xl md:text-3xl font-black text-text-primary tracking-tight">
+              {activeTab === 'saved' ? 'Saved Collections' : 'My Coupon Codes'}
             </h1>
+            <span className="text-xs font-bold text-primary bg-primary/10 px-3 py-1 rounded-full md:hidden">
+              {activeTab === 'saved' ? savedOffers.length : redeemedCodes.length} Items
+            </span>
           </div>
 
           {activeTab === 'saved' && (

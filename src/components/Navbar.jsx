@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { Search, MapPin, User, Menu, Bell, LogOut, ChevronDown, Check } from 'lucide-react';
+import { Search, MapPin, User, Menu, Bell, LogOut, ChevronDown, X, Home, Bookmark, Ticket, Settings, Briefcase } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { MOCK_CATEGORIES } from '../data/mockData';
 
@@ -9,11 +9,19 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   // Sync search input with URL when it changes (for back/forward navigation)
   useEffect(() => {
     setSearchQuery(searchParams.get('q') || '');
   }, [searchParams]);
+
+  // Close drawer when route changes
+  useEffect(() => {
+    setIsDrawerOpen(false);
+    setIsSearchOpen(false);
+  }, [navigate]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -22,7 +30,11 @@ const Navbar = () => {
     } else {
       navigate('/offers');
     }
+    setIsSearchOpen(false);
   };
+
+  const toggleDrawer = () => setIsDrawerOpen(!isDrawerOpen);
+  const toggleSearch = () => setIsSearchOpen(!isSearchOpen);
 
   return (
     <header className="sticky top-0 z-50 bg-card border-b border-border-color shadow-sm w-full">
@@ -39,7 +51,7 @@ const Navbar = () => {
           <div className="flex items-center gap-4">
             <Link to="/business/join" className="hover:text-orange-start transition-colors">Sell on JBP Deals</Link>
             <span className="text-gray-300">|</span>
-            <span className="flex items-center gap-1">
+            <span className="flex items-center gap-1 cursor-pointer">
               Support <ChevronDown size={12} />
             </span>
           </div>
@@ -52,15 +64,15 @@ const Navbar = () => {
           
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 flex-shrink-0 group">
-            <div className="w-10 h-10 bg-gradient-to-br from-orange-start to-orange-end rounded-xl flex items-center justify-center text-card font-bold text-xl shadow-lg transform group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 bg-gradient-to-br from-orange-start to-orange-end rounded-xl hidden sm:flex items-center justify-center text-card font-bold text-xl shadow-lg transform group-hover:scale-105 transition-transform">
               JD
             </div>
-            <span className="font-bold text-2xl tracking-tight hidden sm:block text-primary">
+            <span className="font-bold text-lg sm:text-2xl tracking-tight text-primary">
               JBP <span className="text-orange-end">Deals</span>
             </span>
           </Link>
 
-          {/* Search Bar */}
+          {/* Search Bar (Desktop) */}
           <form onSubmit={handleSearch} className="flex-1 max-w-2xl hidden md:flex relative group">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search className="h-5 w-5 text-text-secondary group-focus-within:text-accent transition-colors" />
@@ -83,8 +95,11 @@ const Navbar = () => {
           {/* Right Actions */}
           <div className="flex items-center justify-end gap-3 flex-shrink-0">
             {/* Mobile Search Icon */}
-            <button className="md:hidden p-2 text-text-secondary hover:text-primary transition-colors">
-              <Search className="w-6 h-6" />
+            <button 
+              onClick={toggleSearch}
+              className="md:hidden p-2 text-text-secondary hover:text-primary transition-colors"
+            >
+              {isSearchOpen ? <X className="w-6 h-6" /> : <Search className="w-6 h-6" />}
             </button>
             
             <button className="p-2 text-text-secondary hover:text-primary transition-colors relative">
@@ -125,15 +140,37 @@ const Navbar = () => {
               </div>
             )}
             
-            {/* Mobile Menu */}
-            <button className="p-2 md:hidden text-text-secondary hover:text-primary transition-colors">
-              <Menu className="w-6 h-6" />
+            {/* Mobile Menu Toggle */}
+            <button 
+              onClick={toggleDrawer}
+              className="p-2 md:hidden text-text-secondary hover:text-primary transition-colors"
+            >
+              {isDrawerOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
+
+        {/* Mobile Search Bar Expansion */}
+        {isSearchOpen && (
+          <div className="md:hidden pt-2 pb-4 animate-in slide-in-from-top-2 duration-200">
+            <form onSubmit={handleSearch} className="relative group">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Search className="h-5 w-5 text-text-secondary" />
+              </div>
+              <input
+                type="text"
+                autoFocus
+                className="block w-full pl-10 pr-4 py-3 border border-border-color rounded-2xl leading-5 bg-background placeholder-text-secondary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-inner"
+                placeholder="Search for offers..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </form>
+          </div>
+        )}
       </div>
 
-      {/* Layer 3: Category Strip */}
+      {/* Layer 3: Category Strip (Desktop) */}
       <div className="border-t border-border-color bg-card relative shadow-sm hidden md:block">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center overflow-x-auto hide-scrollbar py-3 gap-6">
@@ -153,8 +190,111 @@ const Navbar = () => {
           </div>
         </div>
       </div>
+
+      {/* Mobile Drawer Overlay */}
+      {isDrawerOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] md:hidden transition-opacity duration-300"
+          onClick={toggleDrawer}
+        ></div>
+      )}
+
+      {/* Mobile Drawer Content */}
+      <div className={`fixed inset-y-0 left-0 w-[280px] bg-card z-[70] md:hidden transform transition-transform duration-300 ease-in-out shadow-2xl overflow-y-auto flex flex-col ${isDrawerOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="p-6 border-b border-border-color flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-orange-start to-orange-end rounded-lg flex items-center justify-center text-card font-bold text-lg shadow-md">JD</div>
+            <span className="font-bold text-xl text-primary">JBP <span className="text-orange-end">Deals</span></span>
+          </Link>
+          <button onClick={toggleDrawer} className="p-2 text-text-secondary hover:text-discount transition-colors">
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+
+        {/* User Info in Drawer */}
+        {user ? (
+          <div className="p-6 bg-background/50 border-b border-border-color">
+            <div className="flex items-center gap-3 mb-4">
+              <img src={user.avatar} className="w-12 h-12 rounded-full border-2 border-primary/20 shadow-sm" alt={user.name} />
+              <div>
+                <p className="font-bold text-text-primary leading-tight">{user.name}</p>
+                <p className="text-xs text-text-secondary">{user.email}</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <Link to="/dashboard" className="flex flex-col items-center justify-center p-2 bg-card rounded-xl border border-border-color hover:border-primary transition-colors gap-1">
+                <Bookmark size={18} className="text-primary" />
+                <span className="text-[10px] font-bold uppercase text-text-secondary">Saved</span>
+              </Link>
+              <Link to="/dashboard?tab=redeemed" className="flex flex-col items-center justify-center p-2 bg-card rounded-xl border border-border-color hover:border-primary transition-colors gap-1">
+                <Ticket size={18} className="text-orange-start" />
+                <span className="text-[10px] font-bold uppercase text-text-secondary">Codes</span>
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div className="p-6 border-b border-border-color flex flex-col gap-3">
+            <Link to="/login" className="w-full text-center py-3 border border-border-color rounded-xl font-bold text-text-primary hover:bg-background transition-colors">Login</Link>
+            <Link to="/signup" className="w-full text-center py-3 bg-primary text-card rounded-xl font-bold hover:shadow-lg transition-all">Join Now</Link>
+          </div>
+        )}
+
+        {/* Drawer Links */}
+        <div className="flex-grow py-4 overflow-y-auto">
+          <div className="px-6 mb-2">
+            <h3 className="text-[10px] font-black text-text-secondary uppercase tracking-[2px]">Quick Menu</h3>
+          </div>
+          <nav className="space-y-1">
+            <Link to="/" className="flex items-center gap-4 px-6 py-3 text-text-primary hover:bg-background transition-colors font-medium">
+              <Home size={20} className="text-primary" /> Home
+            </Link>
+            <Link to="/offers" className="flex items-center gap-4 px-6 py-3 text-text-primary hover:bg-background transition-colors font-medium">
+              <Search size={20} className="text-primary" /> Explore Offers
+            </Link>
+            <Link to="/offers" className="flex items-center gap-4 px-6 py-3 text-text-primary hover:bg-background transition-colors font-medium">
+              <Briefcase size={20} className="text-primary" /> Categories
+            </Link>
+          </nav>
+
+          <div className="mt-6 px-6 mb-2">
+            <h3 className="text-[10px] font-black text-text-secondary uppercase tracking-[2px]">Popular Categories</h3>
+          </div>
+          <div className="grid grid-cols-2 gap-2 px-6">
+            {MOCK_CATEGORIES.slice(0, 6).map(category => (
+              <Link 
+                key={category.id} 
+                to={`/offers?category=${category.id}`}
+                className="p-2 text-xs font-semibold text-text-secondary bg-background rounded-lg hover:text-primary hover:bg-primary/5 transition-all text-center border border-border-color/50"
+              >
+                {category.name}
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* Drawer Footer Actions */}
+        <div className="p-6 border-t border-border-color bg-gray-50/50">
+          <Link to="/business/join" className="flex items-center gap-3 p-3 bg-card border border-border-color rounded-xl mb-4 hover:shadow-sm transition-shadow">
+            <div className="p-2 bg-orange-start/10 rounded-lg"><Briefcase size={18} className="text-orange-start" /></div>
+            <div>
+              <p className="text-xs font-bold text-text-primary">Sell on JBP Deals</p>
+              <p className="text-[10px] text-text-secondary">Onboard your business</p>
+            </div>
+          </Link>
+          
+          {user && (
+            <button 
+              onClick={logout}
+              className="w-full flex items-center justify-center gap-2 p-3 text-discount font-bold border border-discount/20 rounded-xl hover:bg-red-50 transition-colors"
+            >
+              <LogOut size={18} /> Logout
+            </button>
+          )}
+        </div>
+      </div>
     </header>
   );
 };
 
 export default Navbar;
+
