@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Search, MapPin, User, Menu, Bell, LogOut, ChevronDown, X, Home, Bookmark, Ticket, Settings, Briefcase } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
@@ -11,17 +11,40 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   // Sync search input with URL when it changes (for back/forward navigation)
   useEffect(() => {
     setSearchQuery(searchParams.get('q') || '');
   }, [searchParams]);
 
-  // Close drawer when route changes
   useEffect(() => {
     setIsDrawerOpen(false);
     setIsSearchOpen(false);
+    setIsDropdownOpen(false);
   }, [navigate]);
+
+  // Click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isDropdownOpen]);
+
+  const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -108,26 +131,56 @@ const Navbar = () => {
             </button>
 
             {user ? (
-              <div className="relative group cursor-pointer hidden sm:block">
-                <div className="flex items-center gap-2 p-1 border border-border-color rounded-full hover:shadow-md transition-shadow">
-                  <img src={user.avatar} alt="User avatar" className="w-8 h-8 rounded-full" />
+              <div className="relative cursor-pointer hidden sm:block" ref={dropdownRef}>
+                <div 
+                  className={`flex items-center gap-2 p-1 border rounded-full hover:shadow-md transition-all ${isDropdownOpen ? 'border-primary ring-2 ring-primary/20 shadow-md' : 'border-border-color'}`}
+                  onClick={toggleDropdown}
+                >
+                  <img src={user.avatar} alt="User avatar" className="w-8 h-8 rounded-full border border-border-color" />
                   <span className="text-sm font-medium text-text-primary px-1 max-w-[100px] truncate">
                     {user.name.split(' ')[0]}
                   </span>
-                  <ChevronDown className="w-4 h-4 text-text-secondary mr-2" />
+                  <ChevronDown className={`w-4 h-4 text-text-secondary mr-2 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
                 </div>
                 {/* Dropdown menu */}
-                <div className="absolute right-0 mt-2 w-48 bg-card rounded-xl shadow-lg border border-border-color py-1 hidden group-hover:block z-50">
-                  <Link to="/dashboard" className="block px-4 py-2 text-sm text-text-primary hover:bg-background">Dashboard</Link>
-                  <Link to="/dashboard?tab=saved" className="block px-4 py-2 text-sm text-text-primary hover:bg-background">Saved Offers</Link>
-                  <hr className="my-1 border-border-color" />
-                  <button 
-                    onClick={logout}
-                    className="w-full text-left px-4 py-2 text-sm text-discount hover:bg-red-50 flex items-center gap-2"
-                  >
-                    <LogOut size={16} /> Logout
-                  </button>
-                </div>
+                {isDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-card rounded-xl shadow-xl border border-border-color py-2 z-50 animate-in fade-in zoom-in-95 duration-200 origin-top-right">
+                    <div className="px-4 py-2 border-b border-border-color mb-1">
+                      <p className="text-xs font-bold text-text-secondary uppercase tracking-wider">Account</p>
+                    </div>
+                    <Link 
+                      to="/dashboard" 
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-text-primary hover:bg-background hover:text-primary transition-colors"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      <User size={16} /> Dashboard
+                    </Link>
+                    <Link 
+                      to="/dashboard?tab=saved" 
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-text-primary hover:bg-background hover:text-primary transition-colors"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      <Bookmark size={16} /> Saved Offers
+                    </Link>
+                    <Link 
+                      to="/dashboard?tab=redeemed" 
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-text-primary hover:bg-background hover:text-primary transition-colors"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      <Ticket size={16} /> My Rewards
+                    </Link>
+                    <hr className="my-1 border-border-color" />
+                    <button 
+                      onClick={() => {
+                        logout();
+                        setIsDropdownOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-2.5 text-sm text-discount hover:bg-red-50 flex items-center gap-2 transition-colors"
+                    >
+                      <LogOut size={16} /> Logout
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="hidden sm:flex items-center gap-2">
