@@ -13,7 +13,9 @@
   --color-text-secondary: #6B7280;
   --color-success: #10B981;
 
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Outfit', sans-serif;
+  --font-ui: 'Plus Jakarta Sans', sans-serif;
 }
 
 @layer base {

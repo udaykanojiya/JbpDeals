@@ -17,7 +17,7 @@ const ICONS = {
 
 const SectionHeader = ({ title, link, linkText = "View more" }) => (
   <div className="flex justify-between items-end mb-8 border-b border-border-color pb-4">
-    <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-text-primary flex items-center gap-2">
+    <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight text-text-primary flex items-center gap-2 font-heading">
       <TrendingUp className="text-orange-end" /> {title}
     </h2>
     <Link to={link || "/offers"} className="text-accent hover:text-primary font-semibold text-sm flex items-center gap-1 group transition-colors">
@@ -53,7 +53,7 @@ const Home = () => {
                   {/* Scaled icons for better fit */}
                   {React.cloneElement(ICONS[category.icon] || ICONS.default, { size: 16 })}
                 </div>
-                <span className="text-sm font-black text-text-primary group-hover:text-accent transition-colors whitespace-nowrap">
+                <span className="text-sm font-bold tracking-tight text-text-primary group-hover:text-accent transition-colors whitespace-nowrap font-ui">
                   {category.name}
                 </span>
               </Link>
@@ -73,7 +73,7 @@ const Home = () => {
                   {/* Smaller icons for mobile grid */}
                   {React.cloneElement(ICONS[category.icon] || ICONS.default, { size: 20 })}
                 </div>
-                <span className="text-[9px] font-black text-text-primary text-center leading-tight">
+                <span className="text-[10px] font-bold tracking-tight text-text-primary text-center leading-tight font-ui">
                   {category.name}
                 </span>
               </Link>
@@ -107,7 +107,7 @@ const Home = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-primary via-[#1e40af] to-orange-end opacity-90"></div>
         <div className="relative z-10 flex flex-col md:flex-row items-center justify-between p-8 md:p-14">
           <div className="text-card md:w-2/3 mb-8 md:mb-0">
-            <h2 className="text-3xl md:text-4xl font-black mb-4 tracking-tight drop-shadow-md">
+            <h2 className="text-3xl md:text-4xl font-extrabold mb-4 tracking-tighter drop-shadow-md font-heading">
               Unlock Exclusive VIP Privileges
             </h2>
             <p className="text-lg text-card/90 font-medium max-w-xl">
