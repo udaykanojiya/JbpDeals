@@ -64,23 +64,11 @@ const OffersList = () => {
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto flex-1 md:max-w-2xl justify-end">
-          {/* Search Input */}
-          <div className="relative flex-1 w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-secondary" />
-            <input 
-              type="text"
-              placeholder="Search by restaurant or salon name..."
-              value={searchQuery}
-              onChange={(e) => updateFilters({ q: e.target.value })}
-              className="w-full pl-10 pr-4 py-2.5 rounded-full border border-border-color bg-card focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent shadow-sm transition-all"
-            />
-          </div>
-          
+        <div className="flex items-center gap-4 w-full md:w-auto justify-end">
           {/* Category Dropdown/Filter */}
-          <div className="relative group min-w-[160px]">
+          <div className="relative group min-w-[200px]">
             <select 
-              className="appearance-none w-full bg-card border border-border-color text-text-primary py-2.5 pl-10 pr-8 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-accent/50 cursor-pointer text-sm font-medium"
+              className="appearance-none w-full bg-card border border-border-color text-text-primary py-2.5 pl-10 pr-8 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-accent/50 cursor-pointer text-sm font-black tracking-wide"
               value={activeCategory}
               onChange={(e) => updateFilters({ category: e.target.value })}
             >
@@ -89,7 +77,8 @@ const OffersList = () => {
                 <option key={cat.id} value={cat.id}>{cat.name}</option>
               ))}
             </select>
-            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
+            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary" />
+            <SlidersHorizontal className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary pointer-events-none" />
           </div>
         </div>
       </div>
